@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 import config
+
 # Importando otros modulos
 from src.routes.main_router import register_blueprints
 

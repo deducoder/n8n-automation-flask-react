@@ -3,9 +3,10 @@ import config
 
 health_router = Blueprint("health_router", __name__)
 
+
 @health_router.route("/health", methods=["GET"])
 def health():
-    """"
+    """
     Endponint para evaluar estado del servidor
     """
     response = {
@@ -13,6 +14,6 @@ def health():
         "host": config.HOST,
         "message": "Activo",
         "port": config.PORT,
-        "status": "success"
+        "status": "success",
     }
     return jsonify(response), 200
