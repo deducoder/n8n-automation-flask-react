@@ -1,6 +1,8 @@
 from flask import Blueprint, jsonify, request
 from ...services.format_recognition.format_recognition import FormatRecognitionService
 from ...services.pdf_extractor.pdf_extractor import PDFExtractorService
+from ...services.image_extractor.image_extractor import ImageExtractorService
+
 
 
 
@@ -37,6 +39,7 @@ def file_upload():
             message_suffix = "procesado como PDF"
         # Verifica si es imagen 
         elif file_type == "image":
+            processed_data = ImageExtractorService.image_extract(file)
             message_suffix = "procesado como imagen"
         # Verifica si es Word
         elif file_type == "word":
