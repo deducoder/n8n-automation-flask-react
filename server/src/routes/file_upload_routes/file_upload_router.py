@@ -22,10 +22,30 @@ def file_upload():
         return jsonify(response), 400
     # Identifica tipo de archivo
     try:
+        # Llama la función que identifica el formato
         file_info = FormatRecognitionService.format_recognition(file)
+        # Extracte el formato
+        file_type = file_info.get("category")
+        processed_data = None
+        message_suffix = ""
+        file.seek(0)
+        # Verifica si es PDF
+        if file_type == "pdf":
+            message_suffix = "procesado como PDF"
+        # Verifica si es imagen 
+        elif file_type == "image":
+            message_suffix = "procesado como imagen"
+        # Verifica si es Word
+        elif file_type == "word":
+            message_suffix = "procesado como Word"
+        # Verifica si es otro tipo de archivo
+        else:
+            message_suffix = "no procesado"
+        # Respuesta para el cliente
         response = {
             "file_info": file_info,
-            "message": "Archivo recbido e identificado",
+            "message": "Archivo recbido y " + message_suffix,
+            "status": "success",
             "status": "success",
         }
         return jsonify(response), 200

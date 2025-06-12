@@ -42,14 +42,14 @@ class FormatRecognitionService:
         elif mime_type.startswith("audio/"):
             return "audio"
         elif mime_type in ["application/pdf"]:
-            return "document"
+            return "pdf"
         elif mime_type in [
             "application/msword",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            # "application/vnd.ms-excel",
+            # "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         ]:
-            return "office_document"
+            return "word"
         elif mime_type.startswith("text/"):
             return "text"
         else:
