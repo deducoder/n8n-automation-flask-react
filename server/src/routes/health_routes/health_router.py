@@ -11,7 +11,7 @@ def health():
     response = {
         "debug": config.DEBUG,
         "host": config.HOST,
-        "message": "online",
+        "message": "Activo",
         "port": config.PORT,
         "status": "success"
     }
