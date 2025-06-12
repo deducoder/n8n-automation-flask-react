@@ -1,0 +1,12 @@
+# Carpetas/archivos ignorad@s del proyecto
+.env
+.venv/
+
+# Carpetas/archivos ignorad@s del cliente
+client/node_modules/
+
+# Carpetas/archivos ignorad@s del servidor
+server/__pycache__/
+server/*/__pycache__/
+server/src/*/__pycache__/
+server/src/*/*/__pycache__/
