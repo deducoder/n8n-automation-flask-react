@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify, request
 from ...services.format_recognition.format_recognition import FormatRecognitionService
+from ...services.pdf_extractor.pdf_extractor import PDFExtractorService
+
 
 
 file_upload_router = Blueprint("file_upload_router", __name__)
@@ -31,6 +33,7 @@ def file_upload():
         file.seek(0)
         # Verifica si es PDF
         if file_type == "pdf":
+            processed_data = PDFExtractorService.pdf_extract(file)
             message_suffix = "procesado como PDF"
         # Verifica si es imagen 
         elif file_type == "image":
@@ -45,7 +48,7 @@ def file_upload():
         response = {
             "file_info": file_info,
             "message": "Archivo recbido y " + message_suffix,
-            "status": "success",
+            "processed_data": processed_data, # Respueta del servicio de procesamiento
             "status": "success",
         }
         return jsonify(response), 200

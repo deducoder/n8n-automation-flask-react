@@ -1,6 +1,6 @@
 import os
 import mimetypes
-import magic
+# import magic - Hasta solucionar Magic
 
 
 class FormatRecognitionService:
@@ -19,7 +19,8 @@ class FormatRecognitionService:
         # Restablece el puntero al inicio
         file.seek(0)
         # Usa magic para detectar el tipo de archivo
-        content_type = magic.from_buffer(file_content, mime=True)
+        # content_type = magic.from_buffer(file_content, mime=True) - Hasta solucionar Magic
+        content_type = mime_type # Remplazo provisional a Magic
         # Determina la categoría
         category = FormatRecognitionService._determinate_category(
             mime_type, content_type
