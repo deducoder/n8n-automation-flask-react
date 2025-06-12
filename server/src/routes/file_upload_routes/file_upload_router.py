@@ -30,5 +30,5 @@ def file_upload():
         }
         return jsonify(response), 200
     except Exception as e:
-        response = {"message": str(e), "status": "error"}
+        response = {"message": str(IOError), "status": "error"}
         return jsonify(response), 500

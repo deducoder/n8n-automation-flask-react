@@ -24,16 +24,11 @@ class FormatRecognitionService:
         category = FormatRecognitionService._determinate_category(
             mime_type, content_type
         )
-        return [
-            "category",
-            category,
-            "content_type",
-            content_type,
-            "extension",
-            extension,
-            "mime_type",
-            mime_type,
-        ]
+        return {
+            "category": category,
+            "content_type": content_type,
+            "extension": extension,
+        }
 
     @staticmethod
     def _determinate_category(mime_type, content_type):
