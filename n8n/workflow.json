@@ -1,0 +1,139 @@
+{
+  "name": "data_extraction_from_plain_text",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "784b018b-8799-4fd1-a559-b5d25561e151",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "id": "8e690c72-64c5-4a30-967d-cdfc2c6c3c09",
+      "name": "Webhook",
+      "webhookId": "784b018b-8799-4fd1-a559-b5d25561e151"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6a9d2f65-4225-414f-a27b-b0a9318f2b62",
+              "name": "body.extracted_text",
+              "value": "={{ $json.body.extracted_text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 0],
+      "id": "3978b972-f353-4d4e-8bc9-4b3f012e4608",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<prompt>\n  <description>\n    You are a system specialized in extracting personal data from unstructured Spanish-language text. Your task is to identify and extract specific fields and return them in a clean JSON format.\n  </description>\n  <objectives>\n    <item>Extract the person's full name.</item>\n    <item>Extract the CURP (Clave Única de Registro de Población).</item>\n    <item>Extract the registration state (Mexican federal entity name or abbreviation).</item>\n  </objectives>\n  <considerations>\n    <item>The input text may contain line breaks, formatting noise, or uppercase/lowercase inconsistencies.</item>\n    <item>Ignore line breaks and structure when analyzing the content—focus only on extracting correct values.</item>\n    <item>The JSON output must be a single line string, without markdown formatting or backticks (e.g., no ```json).</item>\n    <item>All extracted fields must be top-level JSON keys. Do not nest them.</item>\n    <item>If any field cannot be confidently determined, return it as an empty string.</item>\n  </considerations>\n  <outputFormat>\n    <json>{\"full_name\": \"\", \"curp\": \"\", \"registration_state\": \"\"}</json>\n  </outputFormat>\n  <instructions>\n    Based on the input text, extract the required fields and return only a single-line, clean JSON object with keys: full_name, curp, and registration_state. Do not include any explanation or formatting such as markdown, line breaks, or code blocks.\n  </instructions>\n  <input>\n    Input text:\n    {{ $json.body.extracted_text }}\n  </input>\n</prompt>\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [440, 0],
+      "id": "eb6cd96f-071a-4c5a-ab5e-7ddfebb53b4f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-04-17",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [400, 200],
+      "id": "998d7646-ca5f-4450-89d9-cb07fb6cfb15",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DrU8tHhZ2P5AcZK6",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "notes": "{\n  \"name\": \"Clean Gemini Output\",\n  \"type\": \"n8n-nodes-base.function\",\n  \"typeVersion\": 1,\n  \"position\": [600, 400],\n  \"parameters\": {\n    \"functionCode\": \"const rawText = items[0].json.response.generations[0][0].text;\\n\\n// Remueve las comillas invertidas y etiquetas de código\\nconst cleaned = rawText.replace(/```json|```/g, '').trim();\\n\\n// Intenta convertir a JSON real\\nlet parsed;\\ntry {\\n  parsed = JSON.parse(cleaned);\\n} catch (e) {\\n  throw new Error('No se pudo parsear el texto como JSON: ' + cleaned);\\n}\\n\\nreturn [{ json: parsed }];\"\n  }\n}\n"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [800, 0],
+      "id": "3bfbb06f-d791-42e3-a025-1f9550195562",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f1ad24dd-2a61-43af-b52d-4745566e44ed",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f9f68591daf1a0ac01a46654093d331d7e39f1f877aa3c4461dfbe98a1288f80"
+  },
+  "id": "KGkxnqqTCSi5SIOM",
+  "tags": []
+}
