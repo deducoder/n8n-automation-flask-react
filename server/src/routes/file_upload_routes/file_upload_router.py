@@ -56,9 +56,14 @@ def file_upload():
 
         # Verifica si es imagen 
         elif file_type == "image":
-            processed_data = ImageExtractorService.image_extract(file)
-            message_suffix = "procesado como imagen"
-            
+            processing_result = ImageExtractorService.image_extract(file)
+            if processing_result and processing_result.get("status") == "success":
+                processed_data = processing_result
+                extracted_text_from_file = processing_result.get("extracted_text")
+                message_suffix = "procesado como imagen"
+            else:
+                raise Exception(processing_result.get("message", "Error al procesar el archivo"))
+
         # Verifica si es Word
         elif file_type == "word":
             message_suffix = "procesado como Word"
@@ -67,19 +72,20 @@ def file_upload():
         else:
             message_suffix = "no procesado"
         
-        # Envía datos a n8n para procesamiento
+        # Envía y recibe datos a n8n para procesamiento
         if extracted_text_from_file and N8N_WEBHOOK_URL:
             payload = {
-                "extracted_text": extracted_text_from_file,
-                "fileile_info": file_info,
-                "original_file_name": file.filename,
+                "extracted_text": extracted_text_from_file, # Texto que n8n procesará
+                "fileile_info": file_info, # Información básica del archivo
+                "original_file_name": file.filename, # Nombre original del archivo
             }
             # Realiza petición POST a n8n
             n8n_response = requests.post(N8N_WEBHOOK_URL, json=payload)
+            # Verifica la petición HTTP 
             n8n_response.raise_for_status()
             # Obtiene respuesta de n8n
             n8n_response_data = n8n_response.json()
-            print(f"Respuesta de n8n: {n8n_response_data}")
+            # print(f"Respuesta de n8n: {n8n_response_data}")
             message_suffix += " y enviado a n8n"
         elif not N8N_WEBHOOK_URL:
             message_suffix = ". n8n URL no configurada"
@@ -88,6 +94,7 @@ def file_upload():
         response = {
             "file_info": file_info,
             "message": "Archivo recbido, " + message_suffix,
+            "n8n_response": n8n_response_data, # Respuesta de n8n
             "processed_data": processed_data, # Respueta del servicio de procesamiento
             "status": "success",
         }
