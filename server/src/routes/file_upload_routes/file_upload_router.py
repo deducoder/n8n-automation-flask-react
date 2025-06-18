@@ -73,13 +73,13 @@ def file_upload():
         
         # Envía y recibe datos a n8n para procesamiento
         if extracted_text_from_file and N8N_WEBHOOK_URL:
-            payload = {
+            body = {
                 "extracted_text": extracted_text_from_file, # Texto que n8n procesará
                 "fileile_info": file_info, # Información básica del archivo
                 "original_file_name": file.filename, # Nombre original del archivo
             }
             # Realiza petición POST a n8n
-            n8n_response = requests.post(N8N_WEBHOOK_URL, json=payload)
+            n8n_response = requests.post(N8N_WEBHOOK_URL, json=body)
             # Verifica la petición HTTP 
             n8n_response.raise_for_status()
             # Obtiene respuesta de n8n
