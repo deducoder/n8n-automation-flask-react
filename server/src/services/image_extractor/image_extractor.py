@@ -1,5 +1,3 @@
-from email.mime import image
-from unittest import result
 import easyocr
 import numpy as np
 from PIL import Image

@@ -1,4 +1,3 @@
-from email import message
 from flask import Blueprint, jsonify, request
 from decouple import config
 import requests
