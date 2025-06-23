@@ -5,6 +5,8 @@ import requests
 from ...services.format_recognition.format_recognition import FormatRecognitionService
 from ...services.pdf_extractor.pdf_extractor import PDFExtractorService
 from ...services.image_extractor.image_extractor import ImageExtractorService
+from ...services.word_extractor.word_extractor import DocumentExtractorService
+
 
 file_upload_router = Blueprint("file_upload_router", __name__)
 
@@ -65,7 +67,11 @@ def file_upload():
 
         # Verifica si es Word
         elif file_type == "word":
-            message_suffix = "procesado como Word"
+            processing_result = DocumentExtractorService.docx_extract(file)
+            if processing_result and processing_result.get("status") == "success":
+                processed_data = processing_result
+                extracted_text_from_file = processing_result.get("extracted_text")
+                message_suffix = "procesado como Word"
             
         # Verifica si es otro tipo de archivo
         else:
